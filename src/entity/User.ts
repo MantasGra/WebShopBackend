@@ -1,12 +1,22 @@
 import { Entity, Column } from 'typeorm';
 import BaseEntityWTS from './base/BaseEntityWTS';
 
+export interface IUser {
+  email: string;
+  password: string;
+  name: string;
+  surname: string;
+  phoneNumber: string;
+  address: string;
+  birthday: Date;
+}
+
 @Entity()
-class User extends BaseEntityWTS {
+class User extends BaseEntityWTS implements IUser {
   @Column()
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column()
