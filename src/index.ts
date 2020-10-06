@@ -1,7 +1,9 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import 'reflect-metadata';
 import connectToDatabase from './databaseConfig/databaseConfig';
 import dotenv from 'dotenv';
+import router from './routes';
+import { errorHandler } from './routes/utility-handlers/error-handler';
 
 dotenv.config();
 
@@ -12,14 +14,11 @@ async function main() {
 
   await connection.runMigrations();
 
-  app.get('/', (req: Request, res: Response) => {
-    res.send('Welcome');
-  });
+  app.use(router);
+  app.use(errorHandler);
 
   const port = process.env.port || 3000;
-  app.listen(port, () => {
-    console.log('Test');
-  });
+  app.listen(port);
 }
 
 main().catch(console.error);
