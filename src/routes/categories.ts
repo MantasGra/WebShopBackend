@@ -7,6 +7,7 @@ import {
   getCategoryProducts,
   updateCategory
 } from '../controller/category-controller';
+import { createProduct } from '../controller/product-controller';
 import { notAllowed } from './utility-handlers/not-allowed';
 
 const router = express.Router();
@@ -21,6 +22,7 @@ router.delete('/:id', deleteCategory);
 router.all('/:id', notAllowed);
 
 router.get('/:id/products', getCategoryProducts);
+router.post('/:id/products', createProduct);
 router.all('/:id/products', notAllowed);
 
 export default router;
