@@ -33,14 +33,18 @@ export const getProduct = async (
 };
 
 export const createProduct = async (
-  req: Request<{}, {}, IProduct>,
+  req: Request<ProductRequestParams, {}, IProduct>,
   res: Response
 ) => {
   try {
     const productRepository = getRepository(Product);
     const categoryRepository = getRepository(Category);
-    await categoryRepository.findOneOrFail(req.body.categoryId);
-    const insertResult = await productRepository.insert(req.body);
+    const categoryId = parseInt(req.params.id);
+    await categoryRepository.findOneOrFail(categoryId);
+    const insertResult = await productRepository.insert({
+      ...req.body,
+      categoryId
+    });
     return res
       .status(StatusCodes.CREATED)
       .header('Location', `/products/${insertResult.raw.insertId}`)

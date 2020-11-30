@@ -11,7 +11,7 @@ import { notAllowed } from './utility-handlers/not-allowed';
 const router = express.Router();
 
 router.get('/', getProductsList);
-router.post('/', createProduct);
+// router.post('/', createProduct);
 router.all('/', notAllowed);
 
 router.get('/:id', getProduct);
