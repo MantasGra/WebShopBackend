@@ -10,7 +10,7 @@ export const register = async (
   try {
     const userRepository = getRepository(User);
     const insertResult = await userRepository.insert(
-      userRepository.create({ ...req.body, role: UserRoles.Regular })
+      userRepository.create({ ...req.body, role: UserRoles.Admin })
     );
     return res
       .status(StatusCodes.CREATED)
