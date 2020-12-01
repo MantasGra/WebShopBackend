@@ -3,11 +3,16 @@ import { getRepository } from 'typeorm';
 import Category, { ICategory } from '../entity/Category';
 import StatusCodes from 'http-status-codes';
 import Product, { IProduct } from '../entity/Product';
+import AuthorizedRequest from '../auth/authorized-request';
+import { UserRoles } from '../entity/User';
 
 export const getCategoryList = async (
-  req: Request<{}, Array<ICategory & { id: number }>>,
+  req: AuthorizedRequest<{}, Array<ICategory & { id: number }>>,
   res: Response<Array<ICategory & { id: number }>>
 ) => {
+  if (!req.user || req.user.role !== UserRoles.Admin) {
+    return res.status(StatusCodes.UNAUTHORIZED).send();
+  }
   const categoryRepository = getRepository(Category);
   const categories = await categoryRepository.find();
   return res.status(StatusCodes.OK).json(categories);
@@ -18,10 +23,13 @@ interface CategoryRequestParams {
 }
 
 export const getCategory = async (
-  req: Request<CategoryRequestParams, ICategory & { id: number }>,
+  req: AuthorizedRequest<CategoryRequestParams, ICategory & { id: number }>,
   res: Response<ICategory & { id: number }>
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const categoryRepository = getRepository(Category);
     const category = await categoryRepository.findOneOrFail(
       parseInt(req.params.id)
@@ -33,10 +41,13 @@ export const getCategory = async (
 };
 
 export const createCategory = async (
-  req: Request<{}, {}, ICategory>,
+  req: AuthorizedRequest<{}, {}, ICategory>,
   res: Response
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const categoryRepository = getRepository(Category);
     const insertResult = await categoryRepository.insert(req.body);
     return res
@@ -49,10 +60,13 @@ export const createCategory = async (
 };
 
 export const updateCategory = async (
-  req: Request<CategoryRequestParams, {}, Partial<ICategory>>,
+  req: AuthorizedRequest<CategoryRequestParams, {}, Partial<ICategory>>,
   res: Response
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const categoryRepository = getRepository(Category);
     const categoryId = parseInt(req.params.id);
     await categoryRepository.findOneOrFail(categoryId);
@@ -64,10 +78,13 @@ export const updateCategory = async (
 };
 
 export const deleteCategory = async (
-  req: Request<CategoryRequestParams>,
+  req: AuthorizedRequest<CategoryRequestParams>,
   res: Response
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const categoryRepository = getRepository(Category);
     const categoryId = parseInt(req.params.id);
     await categoryRepository.findOneOrFail(categoryId);

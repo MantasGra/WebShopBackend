@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
-import User, { IUser } from '../entity/User';
+import User, { IUser, UserRoles } from '../entity/User';
 import StatusCodes from 'http-status-codes';
+import AuthorizedRequest from '../auth/authorized-request';
 
 export const getUserList = async (
-  req: Request<{}, Array<Omit<IUser, 'password'> & { id: number }>>,
+  req: AuthorizedRequest<{}, Array<Omit<IUser, 'password'> & { id: number }>>,
   res: Response<Array<Omit<IUser, 'password'> & { id: number }>>
 ) => {
+  if (!req.user || req.user.role !== UserRoles.Admin) {
+    return res.status(StatusCodes.UNAUTHORIZED).send();
+  }
   const userRepository = getRepository(User);
   const users = await userRepository.find();
   return res.status(StatusCodes.OK).json(users);
@@ -17,10 +21,16 @@ interface UserRequestParams {
 }
 
 export const getUser = async (
-  req: Request<UserRequestParams, Omit<IUser, 'password'> & { id: number }>,
+  req: AuthorizedRequest<
+    UserRequestParams,
+    Omit<IUser, 'password'> & { id: number }
+  >,
   res: Response<Omit<IUser, 'password'> & { id: number }>
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const userRepository = getRepository(User);
     const user = await userRepository.findOneOrFail(parseInt(req.params.id));
     return res.status(StatusCodes.OK).json(user);
@@ -30,10 +40,13 @@ export const getUser = async (
 };
 
 export const createUser = async (
-  req: Request<{}, {}, IUser>,
+  req: AuthorizedRequest<{}, {}, IUser>,
   res: Response
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const userRepository = getRepository(User);
     const insertResult = await userRepository.insert(req.body);
     return res
@@ -46,10 +59,13 @@ export const createUser = async (
 };
 
 export const updateUser = async (
-  req: Request<UserRequestParams, {}, Partial<IUser>>,
+  req: AuthorizedRequest<UserRequestParams, {}, Partial<IUser>>,
   res: Response
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const userRepository = getRepository(User);
     const userId = parseInt(req.params.id);
     await userRepository.findOneOrFail(userId);
@@ -61,10 +77,13 @@ export const updateUser = async (
 };
 
 export const deleteUser = async (
-  req: Request<UserRequestParams>,
+  req: AuthorizedRequest<UserRequestParams>,
   res: Response
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const userRepository = getRepository(User);
     const userId = parseInt(req.params.id);
     await userRepository.findOneOrFail(userId);

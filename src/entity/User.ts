@@ -7,6 +7,11 @@ import PaymentMethod from './PaymentMethod';
 import Purchase from './Purchase';
 import Cart from './Cart';
 
+export enum UserRoles {
+  Regular,
+  Admin
+}
+
 export interface IUser {
   email: string;
   password: string;
@@ -15,6 +20,7 @@ export interface IUser {
   phoneNumber: string;
   address: string;
   birthday: Date;
+  role: UserRoles;
 }
 
 @Entity()
@@ -39,6 +45,9 @@ class User extends BaseEntityWTS implements IUser {
 
   @Column()
   birthday: Date;
+
+  @Column()
+  role: UserRoles;
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];

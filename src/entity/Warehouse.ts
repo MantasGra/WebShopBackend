@@ -9,7 +9,7 @@ export interface IWarehouse {
 }
 
 @Entity()
-class Warehouse extends BaseEntityWTS {
+class Warehouse extends BaseEntityWTS implements IWarehouse {
   @Column()
   name: string;
 

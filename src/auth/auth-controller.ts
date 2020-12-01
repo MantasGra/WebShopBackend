@@ -1,13 +1,16 @@
 import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
-import User, { IUser } from '../entity/User';
+import User, { IUser, UserRoles } from '../entity/User';
 import StatusCodes from 'http-status-codes';
 
-export const register = async (req: Request<{}, {}, IUser>, res: Response) => {
+export const register = async (
+  req: Request<{}, {}, Omit<IUser, 'role'>>,
+  res: Response
+) => {
   try {
     const userRepository = getRepository(User);
     const insertResult = await userRepository.insert(
-      userRepository.create(req.body)
+      userRepository.create({ ...req.body, role: UserRoles.Regular })
     );
     return res
       .status(StatusCodes.CREATED)

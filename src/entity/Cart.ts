@@ -17,7 +17,7 @@ export interface ICart {
 }
 
 @Entity()
-class Cart extends BaseEntityWTS {
+class Cart extends BaseEntityWTS implements ICart {
   @Column()
   userId: number;
 

@@ -5,10 +5,11 @@ import User from './User';
 
 export interface IPaymentMethod {
   type: string;
+  userId: number;
 }
 
 @Entity()
-class PaymentMethod extends BaseEntityWTS {
+class PaymentMethod extends BaseEntityWTS implements IPaymentMethod {
   @Column()
   type: string;
 

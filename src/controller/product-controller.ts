@@ -5,6 +5,8 @@ import StatusCodes from 'http-status-codes';
 
 import AuthorizedRequest from '../auth/authorized-request';
 import Category from '../entity/Category';
+import Review, { IReview } from '../entity/Review';
+import { UserRoles } from '../entity/User';
 
 export const getProductsList = async (
   req: AuthorizedRequest<{}, Array<IProduct & { id: number }>>,
@@ -35,10 +37,13 @@ export const getProduct = async (
 };
 
 export const createProduct = async (
-  req: Request<ProductRequestParams, {}, IProduct>,
+  req: AuthorizedRequest<ProductRequestParams, {}, IProduct>,
   res: Response
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const productRepository = getRepository(Product);
     const categoryRepository = getRepository(Category);
     const categoryId = parseInt(req.params.id);
@@ -57,10 +62,13 @@ export const createProduct = async (
 };
 
 export const updateProduct = async (
-  req: Request<ProductRequestParams, {}, Partial<IProduct>>,
+  req: AuthorizedRequest<ProductRequestParams, {}, Partial<IProduct>>,
   res: Response
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const productRepository = getRepository(Product);
     const categoryRepository = getRepository(Category);
     const productId = parseInt(req.params.id);
@@ -76,10 +84,13 @@ export const updateProduct = async (
 };
 
 export const deleteProduct = async (
-  req: Request<ProductRequestParams>,
+  req: AuthorizedRequest<ProductRequestParams>,
   res: Response
 ) => {
   try {
+    if (!req.user || req.user.role !== UserRoles.Admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
     const productRepository = getRepository(Product);
     const productId = parseInt(req.params.id);
     await productRepository.findOneOrFail(productId);
@@ -87,5 +98,70 @@ export const deleteProduct = async (
     return res.status(StatusCodes.OK).send();
   } catch (err) {
     return res.status(StatusCodes.NOT_FOUND).send(err.message);
+  }
+};
+
+export const getProductReviews = async (
+  req: Request<ProductRequestParams, Array<IReview & { id: number }>>,
+  res: Response<Array<IReview & { id: number }>>
+) => {
+  try {
+    const reviewRepository = getRepository(Review);
+    const productRepository = getRepository(Product);
+    const productId = parseInt(req.params.id);
+    await productRepository.findOneOrFail(productId);
+    const reviews = await reviewRepository.find({ productId });
+    return res.status(StatusCodes.OK).json(reviews);
+  } catch (error) {
+    return res.status(StatusCodes.NOT_FOUND).send(error.message);
+  }
+};
+
+export const createProductReview = async (
+  req: AuthorizedRequest<ProductRequestParams, {}, IReview>,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
+    const reviewRepository = getRepository(Review);
+    const productRepository = getRepository(Product);
+    const productId = parseInt(req.params.id);
+    await productRepository.findOneOrFail(productId);
+    const insertResult = await reviewRepository.insert({
+      ...req.body,
+      productId,
+      userId: req.user.id
+    });
+    return res
+      .status(StatusCodes.CREATED)
+      .header(
+        'Location',
+        `/products/${req.params.id}/reviews/${insertResult.raw.insertId}`
+      )
+      .send();
+  } catch (error) {
+    return res.status(StatusCodes.NOT_FOUND).send(error);
+  }
+};
+
+export const getProductReview = async (
+  req: Request<
+    ProductRequestParams & { reviewId: string },
+    IReview & { id: number }
+  >,
+  res: Response<IReview & { id: number }>
+) => {
+  try {
+    const reviewRepository = getRepository(Review);
+    const productRepository = getRepository(Product);
+    const productId = parseInt(req.params.id);
+    const reviewId = parseInt(req.params.reviewId);
+    await productRepository.findOneOrFail(productId);
+    const review = await reviewRepository.findOneOrFail(reviewId);
+    return res.status(StatusCodes.OK).json(review);
+  } catch (error) {
+    return res.status(StatusCodes.NOT_FOUND).send(error);
   }
 };

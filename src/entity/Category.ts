@@ -8,7 +8,7 @@ export interface ICategory {
 }
 
 @Entity()
-class Category extends BaseEntityWTS {
+class Category extends BaseEntityWTS implements ICategory {
   @Column()
   name: string;
 

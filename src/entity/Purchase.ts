@@ -7,10 +7,12 @@ import User from './User';
 export interface IPurchase {
   date: Date;
   status: string;
+  cartId: number;
+  userId: number;
 }
 
 @Entity()
-class Purchase extends BaseEntityWTS {
+class Purchase extends BaseEntityWTS implements IPurchase {
   @Column()
   date: Date;
 

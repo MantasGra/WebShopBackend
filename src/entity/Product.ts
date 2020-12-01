@@ -16,7 +16,7 @@ export interface IProduct {
 }
 
 @Entity()
-class Product extends BaseEntityWTS {
+class Product extends BaseEntityWTS implements IProduct {
   @Column()
   name: string;
 

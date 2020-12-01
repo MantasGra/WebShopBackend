@@ -10,7 +10,7 @@ export interface IWarehouseProduct {
 }
 
 @Entity()
-class WarehouseProduct extends BaseEntityWTS {
+class WarehouseProduct extends BaseEntityWTS implements IWarehouseProduct {
   @Column()
   quantity: number;
 

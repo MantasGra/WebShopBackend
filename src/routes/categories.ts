@@ -4,7 +4,6 @@ import {
   deleteCategory,
   getCategory,
   getCategoryList,
-  getCategoryProducts,
   updateCategory
 } from '../controller/category-controller';
 import { createProduct } from '../controller/product-controller';
@@ -21,7 +20,6 @@ router.put('/:id', updateCategory);
 router.delete('/:id', deleteCategory);
 router.all('/:id', notAllowed);
 
-router.get('/:id/products', getCategoryProducts);
 router.post('/:id/products', createProduct);
 router.all('/:id/products', notAllowed);
 

@@ -9,7 +9,7 @@ export interface IReview {
 }
 
 @Entity()
-class Review extends BaseEntityWTS {
+class Review extends BaseEntityWTS implements IReview {
   @Column({ type: 'double' })
   stars: number;
 

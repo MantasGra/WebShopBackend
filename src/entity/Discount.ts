@@ -9,7 +9,7 @@ interface IDiscount {
 }
 
 @Entity()
-class Discount extends BaseEntityWTS {
+class Discount extends BaseEntityWTS implements IDiscount {
   @Column()
   type: string;
 
