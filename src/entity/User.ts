@@ -1,4 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, BeforeInsert } from 'typeorm';
+import { createHash } from 'crypto';
+
 import BaseEntityWTS from './base/BaseEntityWTS';
 
 export interface IUser {
@@ -33,6 +35,11 @@ class User extends BaseEntityWTS implements IUser {
 
   @Column()
   birthday: Date;
+
+  @BeforeInsert()
+  hashPassword() {
+    this.password = createHash('sha256').update(this.password).digest('hex');
+  }
 }
 
 export default User;
