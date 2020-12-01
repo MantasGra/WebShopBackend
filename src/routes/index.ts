@@ -9,6 +9,7 @@ import authRouter from './auth';
 import { notFound } from './utility-handlers/not-found';
 import { ExpressApp } from '..';
 import { StatusCodes } from 'http-status-codes';
+import AuthorizedRequest from '../auth/authorized-request';
 
 const getRouter = (app: Required<ExpressApp>) => {
   const router = express.Router();
@@ -27,7 +28,8 @@ const getRouter = (app: Required<ExpressApp>) => {
       const request = new OAuthRequest(req);
       const response = new OAuthResponse(res);
       try {
-        await app.oauth.authenticate(request, response);
+        const token = await app.oauth.authenticate(request, response);
+        (req as AuthorizedRequest).user = token.user;
         next();
       } catch (error) {
         res.status(StatusCodes.UNAUTHORIZED).send('Unauthorized');

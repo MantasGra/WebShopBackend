@@ -1,7 +1,11 @@
-import { Entity, Column, BeforeInsert } from 'typeorm';
+import { Entity, Column, BeforeInsert, OneToMany } from 'typeorm';
 import { createHash } from 'crypto';
 
 import BaseEntityWTS from './base/BaseEntityWTS';
+import Review from './Review';
+import PaymentMethod from './PaymentMethod';
+import Purchase from './Purchase';
+import Cart from './Cart';
 
 export interface IUser {
   email: string;
@@ -35,6 +39,18 @@ class User extends BaseEntityWTS implements IUser {
 
   @Column()
   birthday: Date;
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
+
+  @OneToMany(() => PaymentMethod, (paymentMethod) => paymentMethod.user)
+  paymentMethods: PaymentMethod[];
+
+  @OneToMany(() => Purchase, (purchase) => purchase.user)
+  purchases: Purchase[];
+
+  @OneToMany(() => Cart, (cart) => cart.user)
+  carts: Cart[];
 
   @BeforeInsert()
   hashPassword() {

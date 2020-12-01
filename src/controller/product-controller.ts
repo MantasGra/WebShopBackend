@@ -2,10 +2,12 @@ import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
 import Product, { IProduct } from '../entity/Product';
 import StatusCodes from 'http-status-codes';
+
+import AuthorizedRequest from '../auth/authorized-request';
 import Category from '../entity/Category';
 
 export const getProductsList = async (
-  req: Request<{}, Array<IProduct & { id: number }>>,
+  req: AuthorizedRequest<{}, Array<IProduct & { id: number }>>,
   res: Response<Array<IProduct & { id: number }>>
 ) => {
   const productRepository = getRepository(Product);
