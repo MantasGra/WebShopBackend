@@ -42,7 +42,7 @@ export const createProduct = async (
 ) => {
   try {
     if (!req.user || req.user.role !== UserRoles.Admin) {
-      return res.status(StatusCodes.UNAUTHORIZED).send();
+      return res.status(StatusCodes.FORBIDDEN).send();
     }
     const productRepository = getRepository(Product);
     const categoryRepository = getRepository(Category);
@@ -67,7 +67,7 @@ export const updateProduct = async (
 ) => {
   try {
     if (!req.user || req.user.role !== UserRoles.Admin) {
-      return res.status(StatusCodes.UNAUTHORIZED).send();
+      return res.status(StatusCodes.FORBIDDEN).send();
     }
     const productRepository = getRepository(Product);
     const categoryRepository = getRepository(Category);
@@ -89,7 +89,7 @@ export const deleteProduct = async (
 ) => {
   try {
     if (!req.user || req.user.role !== UserRoles.Admin) {
-      return res.status(StatusCodes.UNAUTHORIZED).send();
+      return res.status(StatusCodes.FORBIDDEN).send();
     }
     const productRepository = getRepository(Product);
     const productId = parseInt(req.params.id);
@@ -123,7 +123,7 @@ export const createProductReview = async (
 ) => {
   try {
     if (!req.user) {
-      return res.status(StatusCodes.UNAUTHORIZED).send();
+      return res.status(StatusCodes.FORBIDDEN).send();
     }
     const reviewRepository = getRepository(Review);
     const productRepository = getRepository(Product);

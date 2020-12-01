@@ -9,7 +9,7 @@ export const getUserList = async (
   res: Response<Array<Omit<IUser, 'password'> & { id: number }>>
 ) => {
   if (!req.user || req.user.role !== UserRoles.Admin) {
-    return res.status(StatusCodes.UNAUTHORIZED).send();
+    return res.status(StatusCodes.FORBIDDEN).send();
   }
   const userRepository = getRepository(User);
   const users = await userRepository.find();
@@ -29,7 +29,7 @@ export const getUser = async (
 ) => {
   try {
     if (!req.user || req.user.role !== UserRoles.Admin) {
-      return res.status(StatusCodes.UNAUTHORIZED).send();
+      return res.status(StatusCodes.FORBIDDEN).send();
     }
     const userRepository = getRepository(User);
     const user = await userRepository.findOneOrFail(parseInt(req.params.id));
@@ -45,7 +45,7 @@ export const createUser = async (
 ) => {
   try {
     if (!req.user || req.user.role !== UserRoles.Admin) {
-      return res.status(StatusCodes.UNAUTHORIZED).send();
+      return res.status(StatusCodes.FORBIDDEN).send();
     }
     const userRepository = getRepository(User);
     const insertResult = await userRepository.insert(req.body);
@@ -64,7 +64,7 @@ export const updateUser = async (
 ) => {
   try {
     if (!req.user || req.user.role !== UserRoles.Admin) {
-      return res.status(StatusCodes.UNAUTHORIZED).send();
+      return res.status(StatusCodes.FORBIDDEN).send();
     }
     const userRepository = getRepository(User);
     const userId = parseInt(req.params.id);
@@ -82,7 +82,7 @@ export const deleteUser = async (
 ) => {
   try {
     if (!req.user || req.user.role !== UserRoles.Admin) {
-      return res.status(StatusCodes.UNAUTHORIZED).send();
+      return res.status(StatusCodes.FORBIDDEN).send();
     }
     const userRepository = getRepository(User);
     const userId = parseInt(req.params.id);
